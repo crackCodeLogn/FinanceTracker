@@ -1,6 +1,7 @@
 # @author Vivek
 # @version 1.0
 # @since 27-07-2019
+import os
 
 from jinja2 import Template
 
@@ -19,6 +20,12 @@ class HtmlGenerator:
         return html_data
 
     def publish_html(self, data):
-        file = open(self.caller + '_statement.html', 'w')
+        folder = self.create_folder_if_not_existing()
+        file = open(folder + self.caller + '_statement.html', 'w')
         file.write(data)
         file.close()
+
+    def create_folder_if_not_existing(self):
+        link = os.getcwd() + "/output/"
+        if not os.path.exists(link): os.mkdir(link)
+        return link
