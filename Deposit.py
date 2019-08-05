@@ -2,7 +2,10 @@
 # @version 1.0
 # @since 27-07-2019
 # The entry point!
+from datetime import datetime
+from datetime import timedelta
 
+from core.DayRow import Row as day
 from core.DepositRow import Row
 from html.HtmlGenerator import HtmlGenerator
 
@@ -11,9 +14,10 @@ from html.HtmlGenerator import HtmlGenerator
 
 class DepositInterestCalc:
 
-    def __init__(self, monthly_installment, roi_annual, months):
+    def __init__(self, monthly_installment, roi_annual, start_date, months):
         self.monthly_inst = monthly_installment
         self.roi = roi_annual / 100.0
+        self.start_date = start_date
         self.months = months
 
         self.compounding_freq = 4
@@ -51,33 +55,47 @@ class DepositInterestCalc:
     def trigger_fd_calc(self):
         constant_part = (1 + self.roi / self.compounding_freq)
 
-        fd_list = []
-        start_date = '01-01-2019'
+        fd_days_list = []
+        date = datetime.strptime(self.start_date, '%d-%m-%Y')
         for month in range(1, self.months + 1, 1):
-            fd_list.append(Row(self.monthly_inst,
-                               self.roi,
-                               start_date,
-                               constant_part,
-                               month,
-                               month / 3,  # the number of quarters completed
-                               True))
+            fd_days_list.append(day(self.monthly_inst,
+                                    self.roi,
+                                    date,
+                                    constant_part,
+                                    month,
+                                    True))
+            date = date + timedelta(days=1)
+
+        fd_month_wise_day_list = {}
+        for entry in fd_days_list:
+            fd_month_wise_day_list[entry.marker] = entry
+
+        for entry in fd_month_wise_day_list:
+            month_start_date = ''
+            marker = fd_month_wise_day_list[entry].marker
+            for inner in fd_days_list:
+                if inner.marker == marker:
+                    month_start_date = inner.date_display
+                    break
+            fd_month_wise_day_list[entry].date_display = month_start_date
+            print(fd_month_wise_day_list[entry])
 
         total_interest = 0.0
         maturity = 0.0
-        for fd in fd_list:
-            print(fd)
+        for fd in fd_days_list:
+            # print(fd)
             total_interest = fd.get_interest_earned()
             maturity = fd.get_amount_accumulated()
 
         total_interest = round(total_interest, 2)
         maturity = round(maturity, 2)
-        HtmlGenerator("FD_" + str(self.monthly_inst)).generate_html(self.headers, fd_list, self.monthly_inst,
-                                                                    total_interest, maturity)
+        # HtmlGenerator("FD_" + str(self.monthly_inst)).generate_html(self.headers, fd_list, self.monthly_inst,
+        #                                                             total_interest, maturity)
 
 
 if __name__ == '__main__':
-    rd = DepositInterestCalc(60000, 7.25, 12)
-    rd.trigger_rd_calc()
+    # rd = DepositInterestCalc(60000, 7.25, 12)
+    # rd.trigger_rd_calc()
 
-    fd = DepositInterestCalc(150000, 7.25, 22)
+    fd = DepositInterestCalc(150000, 7.25, '05-08-2019', 31)
     fd.trigger_fd_calc()
