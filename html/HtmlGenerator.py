@@ -8,7 +8,7 @@ from jinja2 import Template
 
 class HtmlGenerator:
     def __init__(self, caller):
-        self.template = Template(open('rd_fd_template.html', 'r').read())
+        self.template = Template(open('html/rd_fd_template.html', 'r').read())
         self.caller = caller
 
     def generate_html(self, headers, list, total_dep, total_int, maturity):

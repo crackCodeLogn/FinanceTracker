@@ -1,9 +1,10 @@
 # @author Vivek
 # @version 1.0
 # @since 27-07-2019
+# The entry point!
 
-from DepositRow import Row
-from HtmlGenerator import HtmlGenerator
+from core.DepositRow import Row
+from html.HtmlGenerator import HtmlGenerator
 
 
 # https://www.onemint.com/2012/investments/how-to-calculate-interest-on-recurring-deposits/
@@ -21,11 +22,12 @@ class DepositInterestCalc:
 
     def trigger_rd_calc(self):
         constant_part = (1 + self.roi / self.compounding_freq)
-
+        start_date = '01-01-2019'
         rd_list = []
         for month in range(1, self.months + 1, 1):
             rd_list.append(Row(self.monthly_inst,
                                self.roi,
+                               start_date,
                                constant_part,
                                month,
                                self.compounding_freq * month / 12,
@@ -50,12 +52,14 @@ class DepositInterestCalc:
         constant_part = (1 + self.roi / self.compounding_freq)
 
         fd_list = []
+        start_date = '01-01-2019'
         for month in range(1, self.months + 1, 1):
             fd_list.append(Row(self.monthly_inst,
                                self.roi,
+                               start_date,
                                constant_part,
                                month,
-                               self.compounding_freq * month / 12,
+                               month / 3,  # the number of quarters completed
                                True))
 
         total_interest = 0.0

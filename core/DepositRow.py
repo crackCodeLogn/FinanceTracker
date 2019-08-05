@@ -12,9 +12,10 @@ class Row:
     -> monthi: ith month for which the iteration is -- 1<=i<=total_month_RD
     """
 
-    def __init__(self, base, roi, constant, months_completed, exp, hide_base_if_month_more_1):
+    def __init__(self, base, roi, date, constant, months_completed, exp, hide_base_if_month_more_1):
         self.base = base
         self.roi = roi
+        self.date = date
         self.constant = constant
         self.months_completed = months_completed
         self.exponent = exp
